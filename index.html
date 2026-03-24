@@ -771,7 +771,7 @@ const DATA = {
         "4091": { name_ro: "Garanție chirie (Elmorex)", name_it: "Garanzia affitto (Elmorex)", amount: 2926.94, category: "receivables" },
         "4424": { name_ro: "TVA de recuperat", name_it: "IVA da recuperare", amount: 8606.11, category: "receivables" },
         "462": { name_ro: "Creditori diverși (afiliate)", name_it: "Creditori diversi (affiliate)", amount: 4357847.34, category: "related_party", human_ro: "Datorii către companii afiliate / parteneri", human_it: "Debiti verso società affiliate/partner" },
-        "463": { name_ro: "Dividende de încasat", name_it: "Dividendi da incassare", amount: 901637.00, category: "related_party", human_ro: "Dividende declarate dar neîncasate încă", human_it: "Dividendi dichiarati ma non ancora incassati" },
+        "463": { name_ro: "Dividende de încasat", name_it: "Dividendi da incassare", amount: 901637.00, category: "related_party", human_ro: "Dividende brute declarate de IFP (~901.637 RON ≈ profit net integral). Impozit 10%: ~90.164 RON (cont 446), rest net → asociați", human_it: "Dividendi lordi dichiarati da IFP (~901.637 RON ≈ utile netto integrale). Imposta 10%: ~90.164 RON (conto 446), resto netto → soci" },
         "4551": { name_ro: "Conturi curente asociați", name_it: "Conti correnti soci", amount: 398534.39, category: "related_party", human_ro: "Sumă depusă de asociat în contul curent al firmei", human_it: "Somma depositata dal socio nel conto corrente aziendale" },
         "401": { name_ro: "Furnizori", name_it: "Fornitori", amount: 81422.77, category: "liabilities" },
         "421": { name_ro: "Salarii datorate", name_it: "Stipendi dovuti", amount: 15151.00, category: "liabilities" },
@@ -780,7 +780,7 @@ const DATA = {
         "436": { name_ro: "CAM de plătit", name_it: "CAM da pagare", amount: 277.00, category: "liabilities" },
         "4411": { name_ro: "Impozit profit de plătit", name_it: "Imposta utili da pagare", amount: 82130.00, category: "liabilities" },
         "444": { name_ro: "Impozit salarii de plătit", name_it: "Imposta stipendi da pagare", amount: 642.00, category: "liabilities" },
-        "446": { name_ro: "Alte impozite de plătit", name_it: "Altre imposte da pagare", amount: 45262.00, category: "liabilities" }
+        "446": { name_ro: "Alte impozite de plătit (incl. impozit dividende)", name_it: "Altre imposte da pagare (incl. imposta dividendi)", amount: 45262.00, category: "liabilities", human_ro: "Include impozitul pe dividende de 10% (din 2025, Legea 141/2025). Profit net IFP: 901.584 RON → impozit teoretic: ~90.158 RON; sold 45.262 RON — restul deja virat la ANAF", human_it: "Include l'imposta sui dividendi del 10% (dal 2025, Legge 141/2025). Utile netto IFP: 901.584 RON → imposta teorica: ~90.158 RON; saldo 45.262 RON — il resto già versato all'ANAF" }
       },
       expense_categories: {
         goods: { name_ro: "Costul mărfurilor vândute", name_it: "Costo merci vendute", total: 595866.11, icon: "📦", human_ro: "Prețul de achiziție al produselor textile revândute clienților", human_it: "Prezzo di acquisto dei prodotti tessili rivenduti ai clienti" },
@@ -895,7 +895,7 @@ const DATA = {
         "4111": { name_ro: "Clienți", name_it: "Clienti", amount: 118602.87, category: "receivables" },
         "4424": { name_ro: "TVA de recuperat", name_it: "IVA da recuperare", amount: 60711.54, category: "receivables" },
         "461": { name_ro: "Debitori diverși", name_it: "Debitori diversi", amount: 71.50, category: "receivables" },
-        "463": { name_ro: "Dividende de încasat", name_it: "Dividendi da incassare", amount: 1803294.00, category: "related_party", human_ro: "Dividende declarate dar neîncasate încă", human_it: "Dividendi dichiarati ma non ancora incassati" },
+        "463": { name_ro: "Dividende de încasat", name_it: "Dividendi da incassare", amount: 1803294.00, category: "related_party", human_ro: "Dividende brute declarate de FILATO (~1.803.294 RON ≈ profit net integral). Din acestea: 10% impozit (180.329 RON → cont 446), rest net → asociați", human_it: "Dividendi lordi dichiarati da FILATO (~1.803.294 RON ≈ utile netto integrale). Di questi: 10% imposta (180.329 RON → conto 446), resto netto → soci" },
         "456": { name_ro: "Decontări asociați capital", name_it: "Liquidazione soci capitale", amount: 1622765.00, category: "related_party", human_ro: "Decontări cu asociații privind capitalul", human_it: "Liquidazioni con i soci riguardanti il capitale" },
         "401": { name_ro: "Furnizori", name_it: "Fornitori", amount: 57.39, category: "liabilities" },
         "421": { name_ro: "Salarii datorate", name_it: "Stipendi dovuti", amount: 5000.00, category: "liabilities" },
@@ -904,8 +904,8 @@ const DATA = {
         "436": { name_ro: "CAM de plătit", name_it: "CAM da pagare", amount: 183.00, category: "liabilities" },
         "4411": { name_ro: "Impozit profit de plătit", name_it: "Imposta utili da pagare", amount: 28279.00, category: "liabilities" },
         "444": { name_ro: "Impozit salarii de plătit", name_it: "Imposta stipendi da pagare", amount: 466.00, category: "liabilities" },
-        "446": { name_ro: "Alte impozite de plătit", name_it: "Altre imposte da pagare", amount: 180329.00, category: "liabilities" },
-        "457": { name_ro: "Dividende de plătit", name_it: "Dividendi da pagare", amount: 253764.96, category: "liabilities" },
+        "446": { name_ro: "Alte impozite de plătit (incl. impozit dividende)", name_it: "Altre imposte da pagare (incl. imposta dividendi)", amount: 180329.00, category: "liabilities", human_ro: "Impozit pe dividende 10% (din 2025, Legea 141/2025). Profit net FILATO: 1.804.237 RON → 10% = 180.329 RON. Practic tot profitul a fost distribuit ca dividende", human_it: "Imposta sui dividendi 10% (dal 2025, Legge 141/2025). Utile netto FILATO: 1.804.237 RON → 10% = 180.329 RON. Praticamente tutto l'utile è stato distribuito come dividendi" },
+        "457": { name_ro: "Dividende de plătit", name_it: "Dividendi da pagare", amount: 253764.96, category: "liabilities", human_ro: "Rest de dividende nete de achitat asociaților. Din totalul brut ~1.803.290 RON, s-au plătit deja ~1.369.196 RON pe parcursul anului", human_it: "Resto di dividendi netti da pagare ai soci. Del totale lordo ~1.803.290 RON, sono già stati pagati ~1.369.196 RON durante l'anno" },
         "473": { name_ro: "Decontări operațiuni în curs", name_it: "Liquidazioni operazioni in corso", amount: 60826.06, category: "liabilities" }
       },
       expense_categories: {
@@ -1760,12 +1760,40 @@ function renderOverview(el) {
     expChartData = expCatKeys.map(k => fmtRaw(ep[k]["2025"]||0));
   }
   const expChartTotal = expChartData.reduce((s,v)=>s+v,0);
+  function updateExpTotal(chart) {
+    const ds = chart.data.datasets[0].data;
+    let vis = 0;
+    ds.forEach((v,i) => { if (!chart.getDatasetMeta(0).data[i].hidden) vis += v; });
+    chart.config.options._centerText = fmtK(vis) + ' ' + cur();
+    document.getElementById('exp-total-label').innerHTML = `<span style="font-weight:700;font-size:18px;color:var(--text);">${fmtK(vis)}</span> <span style="font-size:12px;">${cur()}</span>`;
+  }
   document.getElementById('exp-total-label').innerHTML = `<span style="font-weight:700;font-size:18px;color:var(--text);">${fmtK(expChartTotal)}</span> <span style="font-size:12px;">${cur()}</span>`;
   const doughnutCenterPlugin = {id:'doughnutCenter',beforeDraw(chart){if(chart.config.type!=='doughnut'||!chart.config.options._centerText)return;const{ctx,chartArea:{top,bottom,left,right}}=chart;const cx=(left+right)/2,cy=(top+bottom)/2;ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#94a3b8';ctx.font='bold 14px sans-serif';ctx.fillText(chart.config.options._centerText,cx,cy);ctx.restore();}};
-  charts['exp'] = new Chart(document.getElementById('ch-exp'),{type:'doughnut',data:{
-    labels:[t('materials'),t('employeeCosts'),t('depreciation'),t('valueAdj'),t('otherOp')],
-    datasets:[{data:expChartData,backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],borderWidth:0}]
-  },options:{responsive:true,_centerText:fmtK(expChartTotal)+' '+cur(),plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:12}}}},plugins:[doughnutCenterPlugin]});
+  charts['exp'] = new Chart(document.getElementById('ch-exp'),{
+    type:'doughnut',
+    data:{
+      labels:[t('materials'),t('employeeCosts'),t('depreciation'),t('valueAdj'),t('otherOp')],
+      datasets:[{data:expChartData,backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],borderWidth:0}]
+    },
+    options:{
+      responsive:true,
+      _centerText:fmtK(expChartTotal)+' '+cur(),
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{color:'#94a3b8',padding:12},
+          onClick:function(e,legendItem,legend){
+            const idx = legendItem.index;
+            const meta = legend.chart.getDatasetMeta(0);
+            meta.data[idx].hidden = !meta.data[idx].hidden;
+            updateExpTotal(legend.chart);
+            legend.chart.update();
+          }
+        }
+      }
+    },
+    plugins:[doughnutCenterPlugin]
+  });
 
   const aLabels = [t('inventories'),t('receivables'),t('stInvest'),t('cashBank'),t('fixedAssets')];
   const aKeys = ["I. Inventories","II. Receivables","III. Short-term Investments","IV. Cash and Bank","A. FIXED ASSETS TOTAL"];
