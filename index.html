@@ -338,6 +338,8 @@ const T = {
     whatItMeansProfit: 'Ceea ce rămâne după toate cheltuielile și impozitele — câștigul real',
     whatItMeansMargin: 'Raport profit/vânzări. 44% este excelent — compania este foarte eficientă',
     whatItMeansAssets: 'Valoarea totală a tuturor bunurilor deținute de companie',
+    totalExpenses: 'Total cheltuieli',
+    whatItMeansExpenses: 'Toate costurile suportate de companie: mărfuri, salarii, amortizare, servicii, impozite și cheltuieli financiare',
     healthLegend: 'Legendă sănătate',
     green: 'Sănătos', yellow: 'Moderat', red: 'Îngrijorător',
     storyToggle: 'Citește povestea', costStoryToggle: 'Povesta costurilor',
@@ -459,6 +461,8 @@ const T = {
     whatItMeansProfit: 'Ciò che rimane dopo tutte le spese e le tasse — il guadagno reale',
     whatItMeansMargin: 'Rapporto utile/vendite. Il 44% è eccellente — l\'azienda è molto efficiente',
     whatItMeansAssets: 'Valore totale di tutti i beni posseduti dall\'azienda',
+    totalExpenses: 'Totale costi',
+    whatItMeansExpenses: 'Tutti i costi sostenuti dall\'azienda: merci, stipendi, ammortamento, servizi, imposte e oneri finanziari',
     healthLegend: 'Legenda salute', green: 'Sano', yellow: 'Moderato', red: 'Preoccupante',
     storyToggle: 'Leggi la storia', costStoryToggle: 'Storia dei costi',
     interCompanyFlows: 'Vedi flussi inter-aziendali',
@@ -998,6 +1002,7 @@ function kpiExplanation(type, value) {
   else if (type === 'profit') text = t('whatItMeansProfit');
   else if (type === 'margin') text = t('whatItMeansMargin');
   else if (type === 'assets') text = t('whatItMeansAssets');
+  else if (type === 'expenses') text = t('whatItMeansExpenses');
   return `<div class="kpi-explanation">${text}</div>`;
 }
 
@@ -1021,6 +1026,11 @@ function trafficLight(metric, value, prev) {
     const growth = pct(value, prev);
     if (growth === null || growth < 0) color = 'red';
     else if (growth < 5) color = 'yellow';
+    else color = 'green';
+  } else if (metric === 'expenses') {
+    const growth = pct(value, prev);
+    if (growth === null || growth > 10) color = 'red';
+    else if (growth > 0) color = 'yellow';
     else color = 'green';
   }
   return `<span class="tl-dot tl-${color}"></span>`;
@@ -1533,6 +1543,9 @@ function renderOverview(el) {
     const emp25 = (DATA.IFP.employees["2025"]||0) + (DATA.FILATO.employees["2025"]||0);
     const m24 = rev24 ? prof24/rev24*100 : 0;
     const m25 = rev25 ? prof25/rev25*100 : 0;
+    const expKeys = ["2. Cost of Materials & Goods","3. Employee Costs","4a. Depreciation","4b. Value Adj. Current Assets","5. Other Operating Expenses"];
+    const exp25 = expKeys.reduce((s,k) => s + (DATA.IFP.profit_loss[k]["2025"]||0) + (DATA.FILATO.profit_loss[k]["2025"]||0), 0);
+    const exp24 = expKeys.reduce((s,k) => s + (DATA.IFP.profit_loss[k]["2024"]||0) + (DATA.FILATO.profit_loss[k]["2024"]||0), 0);
 
     html += `<h2 style="margin-bottom:12px;font-size:18px;"><span class="company-badge" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(16,185,129,0.2)); color: var(--text);">IFP + FILATO</span> ${t('combinedLabel')}</h2>
     <p style="color:var(--text2);font-size:13px;margin-bottom:16px;">${t('employees')}: ${emp24} → ${emp25}</p>
@@ -1569,6 +1582,15 @@ function renderOverview(el) {
         <button class="collapsible-toggle" id="toggle-asset-exp" onclick="toggleSection('asset-exp')" style="width:100%;margin-top:8px;"><span class="arrow">▶</span> ${t('whatDoesItMean')}</button>
         <div id="body-asset-exp" class="collapsible-body">${kpiExplanation('assets')}</div>
       </div>
+      <div class="kpi-card">
+        <div class="kpi-label">${trafficLight('expenses',exp25,exp24)} ${t('totalExpenses')} 2025 ${tooltip({ro:'Total cheltuieli operaționale',it:'Totale costi operativi',tt_ro:'Suma tuturor cheltuielilor de exploatare: costul mărfurilor, salariile, amortizarea, ajustările de valoare și alte cheltuieli operaționale. Nu include cheltuielile financiare.',tt_it:'Somma di tutti i costi operativi: costo delle merci, stipendi, ammortamento, rettifiche di valore e altri costi operativi. Non include gli oneri finanziari.',law_ro:'OMFP 1802/2014, F20 Cont de profit și pierdere, rd. 2–5',law_it:'OMFP 1802/2014, F20 Conto economico, righe 2–5'})}</div>
+        <div class="kpi-value">${fmtK(exp25)} <span class="currency-tag">${cur()}</span></div>
+        <div class="kpi-change ${pct(exp25,exp24)<=0?'positive':'negative'}">${pctStr(exp25,exp24)} ${t('vs')} 2024</div>
+        <div class="kpi-sub">2024: ${fmtK(exp24)} ${cur()}</div>
+        <div class="kpi-sub">${lang==='ro'?'Raport cheltuieli/venituri':'Rapporto costi/ricavi'}: ${rev25>0?(exp25/rev25*100).toFixed(1):'—'}%</div>
+        <button class="collapsible-toggle" id="toggle-exp-exp" onclick="toggleSection('exp-exp')" style="width:100%;margin-top:8px;"><span class="arrow">▶</span> ${t('whatDoesItMean')}</button>
+        <div id="body-exp-exp" class="collapsible-body">${kpiExplanation('expenses')}</div>
+      </div>
     </div>`;
   } else {
     // ── SINGLE COMPANY MODE: Show individual company data ──
@@ -1582,6 +1604,9 @@ function renderOverview(el) {
       const a25 = (d.balance_sheet["A. FIXED ASSETS TOTAL"]["2025"]||0) + (d.balance_sheet["B. CURRENT ASSETS TOTAL"]["2025"]||0);
       const m24 = rev24 ? prof24/rev24*100 : 0;
       const m25 = rev25 ? prof25/rev25*100 : 0;
+      const sExpKeys = ["2. Cost of Materials & Goods","3. Employee Costs","4a. Depreciation","4b. Value Adj. Current Assets","5. Other Operating Expenses"];
+      const sExp25 = sExpKeys.reduce((s,k) => s + (d.profit_loss[k]["2025"]||0), 0);
+      const sExp24 = sExpKeys.reduce((s,k) => s + (d.profit_loss[k]["2024"]||0), 0);
       const badge = key === 'IFP' ? 'badge-ifp' : 'badge-filato';
 
       html += `<h2 style="margin-bottom:12px;font-size:18px;"><span class="company-badge ${badge}">${key}</span> ${d.name}</h2>
@@ -1618,6 +1643,15 @@ function renderOverview(el) {
           <div class="kpi-sub">2024: ${fmtK(a24)} ${cur()}</div>
           <button class="collapsible-toggle" id="toggle-asset-exp-${key}" onclick="toggleSection('asset-exp-${key}')" style="width:100%;margin-top:8px;"><span class="arrow">▶</span> ${t('whatDoesItMean')}</button>
           <div id="body-asset-exp-${key}" class="collapsible-body">${kpiExplanation('assets')}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">${trafficLight('expenses',sExp25,sExp24)} ${t('totalExpenses')} 2025 ${tooltip({ro:'Total cheltuieli operaționale',it:'Totale costi operativi',tt_ro:'Suma tuturor cheltuielilor de exploatare: costul mărfurilor, salariile, amortizarea, ajustările de valoare și alte cheltuieli operaționale. Nu include cheltuielile financiare.',tt_it:'Somma di tutti i costi operativi: costo delle merci, stipendi, ammortamento, rettifiche di valore e altri costi operativi. Non include gli oneri finanziari.',law_ro:'OMFP 1802/2014, F20 Cont de profit și pierdere, rd. 2–5',law_it:'OMFP 1802/2014, F20 Conto economico, righe 2–5'})}</div>
+          <div class="kpi-value">${fmtK(sExp25)} <span class="currency-tag">${cur()}</span></div>
+          <div class="kpi-change ${pct(sExp25,sExp24)<=0?'positive':'negative'}">${pctStr(sExp25,sExp24)} ${t('vs')} 2024</div>
+          <div class="kpi-sub">2024: ${fmtK(sExp24)} ${cur()}</div>
+          <div class="kpi-sub">${lang==='ro'?'Raport cheltuieli/venituri':'Rapporto costi/ricavi'}: ${rev25>0?(sExp25/rev25*100).toFixed(1):'—'}%</div>
+          <button class="collapsible-toggle" id="toggle-exp-exp-${key}" onclick="toggleSection('exp-exp-${key}')" style="width:100%;margin-top:8px;"><span class="arrow">▶</span> ${t('whatDoesItMean')}</button>
+          <div id="body-exp-exp-${key}" class="collapsible-body">${kpiExplanation('expenses')}</div>
         </div>
       </div>`;
     });
@@ -1662,7 +1696,15 @@ function renderOverview(el) {
     </div>`;
   }
 
-  // Enhancement 3: Trend Narratives
+  html += `<div class="charts-grid">
+    <div class="chart-card"><h3>${t('revProfChart')}</h3><canvas id="ch-rp"></canvas></div>
+    <div class="chart-card"><h3>${t('expChart')}${companies.length>1?' ('+t('combinedLabel')+')':''}</h3><div id="exp-total-label" style="text-align:center;margin:-4px 0 8px 0;font-size:13px;color:var(--text2);"></div><canvas id="ch-exp"></canvas></div>
+    <div class="chart-card"><h3>${t('assetChart')} 2025</h3><canvas id="ch-as"></canvas></div>
+    <div class="chart-card"><h3>${t('marginChart')}</h3><canvas id="ch-mg"></canvas></div>
+  </div>`;
+  html += renderQA();
+
+  // Collapsible sections at bottom
   const narrative = generateTrendNarrative(companies);
   html += `<div class="narrative-card">
     <button class="collapsible-toggle" id="toggle-story" onclick="toggleSection('story')" style="width:100%;"><span class="arrow">▶</span> 📊 ${t('storyToggle')}</button>
@@ -1670,8 +1712,6 @@ function renderOverview(el) {
       <div class="narrative-content">${narrative}</div>
     </div>
   </div>`;
-
-  // Enhancement 4: Inter-Company Flows (only in BOTH mode)
   if (companies.length > 1) {
     html += `<div class="narrative-card">
       <button class="collapsible-toggle" id="toggle-flows" onclick="toggleSection('flows')" style="width:100%;"><span class="arrow">▶</span> 🔗 ${t('interCompanyFlows')}</button>
@@ -1681,8 +1721,6 @@ function renderOverview(el) {
       </div>
     </div>`;
   }
-
-  // Enhancement 5: Cash Flow Estimation
   companies.forEach(key => {
     html += `<div class="narrative-card">
       <button class="collapsible-toggle" id="toggle-cashflow-${key}" onclick="toggleSection('cashflow-${key}')" style="width:100%;"><span class="arrow">▶</span> 💰 ${t('cashFlowEstimate')} (${key})</button>
@@ -1692,13 +1730,6 @@ function renderOverview(el) {
     </div>`;
   });
 
-  html += `<div class="charts-grid">
-    <div class="chart-card"><h3>${t('revProfChart')}</h3><canvas id="ch-rp"></canvas></div>
-    <div class="chart-card"><h3>${t('expChart')}${companies.length>1?' ('+t('combinedLabel')+')':''}</h3><canvas id="ch-exp"></canvas></div>
-    <div class="chart-card"><h3>${t('assetChart')} 2025</h3><canvas id="ch-as"></canvas></div>
-    <div class="chart-card"><h3>${t('marginChart')}</h3><canvas id="ch-mg"></canvas></div>
-  </div>`;
-  html += renderQA();
   el.innerHTML = html;
 
   // Charts
@@ -1718,22 +1749,23 @@ function renderOverview(el) {
   ]},options:chartOpts(true)});
 
   // Expense chart: combined for both mode, single for single company
+  const expCatKeys = ["2. Cost of Materials & Goods","3. Employee Costs","4a. Depreciation","4b. Value Adj. Current Assets","5. Other Operating Expenses"];
+  let expChartData;
   if (companies.length > 1) {
     const ep_ifp = DATA.IFP.profit_loss;
     const ep_filato = DATA.FILATO.profit_loss;
-    charts['exp'] = new Chart(document.getElementById('ch-exp'),{type:'doughnut',data:{
-      labels:[t('materials'),t('employeeCosts'),t('depreciation'),t('valueAdj'),t('otherOp')],
-      datasets:[{data:[fmtRaw((ep_ifp["2. Cost of Materials & Goods"]["2025"]||0)+(ep_filato["2. Cost of Materials & Goods"]["2025"]||0)),fmtRaw((ep_ifp["3. Employee Costs"]["2025"]||0)+(ep_filato["3. Employee Costs"]["2025"]||0)),fmtRaw((ep_ifp["4a. Depreciation"]["2025"]||0)+(ep_filato["4a. Depreciation"]["2025"]||0)),fmtRaw((ep_ifp["4b. Value Adj. Current Assets"]["2025"]||0)+(ep_filato["4b. Value Adj. Current Assets"]["2025"]||0)),fmtRaw((ep_ifp["5. Other Operating Expenses"]["2025"]||0)+(ep_filato["5. Other Operating Expenses"]["2025"]||0))],
-      backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],borderWidth:0}]
-    },options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:12}}}}});
+    expChartData = expCatKeys.map(k => fmtRaw((ep_ifp[k]["2025"]||0)+(ep_filato[k]["2025"]||0)));
   } else {
     const ep = DATA[companies[0]].profit_loss;
-    charts['exp'] = new Chart(document.getElementById('ch-exp'),{type:'doughnut',data:{
-      labels:[t('materials'),t('employeeCosts'),t('depreciation'),t('valueAdj'),t('otherOp')],
-      datasets:[{data:[fmtRaw(ep["2. Cost of Materials & Goods"]["2025"]),fmtRaw(ep["3. Employee Costs"]["2025"]),fmtRaw(ep["4a. Depreciation"]["2025"]),fmtRaw(ep["4b. Value Adj. Current Assets"]["2025"]),fmtRaw(ep["5. Other Operating Expenses"]["2025"])],
-      backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],borderWidth:0}]
-    },options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:12}}}}});
+    expChartData = expCatKeys.map(k => fmtRaw(ep[k]["2025"]||0));
   }
+  const expChartTotal = expChartData.reduce((s,v)=>s+v,0);
+  document.getElementById('exp-total-label').innerHTML = `<span style="font-weight:700;font-size:18px;color:var(--text);">${fmtK(expChartTotal)}</span> <span style="font-size:12px;">${cur()}</span>`;
+  const doughnutCenterPlugin = {id:'doughnutCenter',beforeDraw(chart){if(chart.config.type!=='doughnut'||!chart.config.options._centerText)return;const{ctx,chartArea:{top,bottom,left,right}}=chart;const cx=(left+right)/2,cy=(top+bottom)/2;ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#94a3b8';ctx.font='bold 14px sans-serif';ctx.fillText(chart.config.options._centerText,cx,cy);ctx.restore();}};
+  charts['exp'] = new Chart(document.getElementById('ch-exp'),{type:'doughnut',data:{
+    labels:[t('materials'),t('employeeCosts'),t('depreciation'),t('valueAdj'),t('otherOp')],
+    datasets:[{data:expChartData,backgroundColor:['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6'],borderWidth:0}]
+  },options:{responsive:true,_centerText:fmtK(expChartTotal)+' '+cur(),plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:12}}}},plugins:[doughnutCenterPlugin]});
 
   const aLabels = [t('inventories'),t('receivables'),t('stInvest'),t('cashBank'),t('fixedAssets')];
   const aKeys = ["I. Inventories","II. Receivables","III. Short-term Investments","IV. Cash and Bank","A. FIXED ASSETS TOTAL"];
